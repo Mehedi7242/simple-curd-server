@@ -27,6 +27,7 @@ async function run() {
 
     const database = client.db('usersDB')
     const userCollection = database.collection('users')
+    const vegetableProductsCollection = database.collection('products'); 
 
     app.get('/users', async(req, res)=>{
       const cursor = userCollection.find()
@@ -34,12 +35,41 @@ async function run() {
       res.send(result);
     })
 
-    app.post('/users',(req, res)=>{
+    app.post('/users',async(req, res)=>{
         const user = req.body
         console.log('new user' ,user)
-        const result = userCollection.insertOne(user)
+        const result = await userCollection.insertOne(user)
         res.send(result)
     })
+
+
+    // Get all vegetable products
+    app.get('/products', async (req, res) => {
+      const cursor = vegetableProductsCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
+    });
+
+
+    app.post('/products', async (req, res) => {
+      const product = req.body;
+      console.log('Received Product:', product);
+    
+      if (!product.name || !product.price || !product.category) {
+        return res.status(400).json({ success: false, message: 'Product data is incomplete' });
+      }
+    
+      try {
+        // Insert the product into the vegetableProductsCollection
+        const result = await vegetableProductsCollection.insertOne(product);
+        console.log('Inserted Product:', result);
+        res.status(200).json({ success: true, message: 'Product added successfully!' });
+      } catch (error) {
+        console.error('Error inserting product:', error);
+        res.status(500).json({ success: false, message: 'Error adding product' });
+      }
+    });
+
 
 
     // Send a ping to confirm a successful connection
