@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+require('dotenv').config();
 const { MongoClient, ServerApiVersion } = require('mongodb');
 const port = process.env.PORT || 5000;
 const app = express();
@@ -7,9 +8,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-//mehediHasan7242
-
-const uri = "mongodb+srv://mehediHasan7242:mehediHasan7242@cluster0.pzup6.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
+const uri = `mongodb+srv://${process.env.DB}:${process.env.PASSWORD}@cluster0.pzup6.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
@@ -37,7 +36,7 @@ async function run() {
 
     app.post('/users',async(req, res)=>{
         const user = req.body
-        console.log('new user' ,user)
+        // console.log('new user' ,user)
         const result = await userCollection.insertOne(user)
         res.send(result)
     })
@@ -53,7 +52,7 @@ async function run() {
 
     app.post('/products', async (req, res) => {
       const product = req.body;
-      console.log('Received Product:', product);
+      // console.log('Received Product:', product);
     
       if (!product.name || !product.price || !product.category) {
         return res.status(400).json({ success: false, message: 'Product data is incomplete' });
@@ -65,7 +64,7 @@ async function run() {
         console.log('Inserted Product:', result);
         res.status(200).json({ success: true, message: 'Product added successfully!' });
       } catch (error) {
-        console.error('Error inserting product:', error);
+        // console.error('Error inserting product:', error);
         res.status(500).json({ success: false, message: 'Error adding product' });
       }
     });
@@ -74,7 +73,7 @@ async function run() {
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
-    console.log("Pinged your deployment. You successfully connected to MongoDB!");
+    // console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
     // Ensures that the client will close when you finish/error
     // await client.close();
