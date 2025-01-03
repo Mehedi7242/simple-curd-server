@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const port = process.env.PORT || 5000;
 const app = express();
 //middle ware
@@ -68,6 +68,26 @@ async function run() {
         res.status(500).json({ success: false, message: 'Error adding product' });
       }
     });
+
+    app.delete('/products/:id', async (req, res) => {
+      const productId = req.params.id;
+    
+      try {
+        // Delete the product from the vegetableProductsCollection
+        const result = await vegetableProductsCollection.deleteOne({ _id: new ObjectId(productId) });
+    
+        if (result.deletedCount === 1) {
+          res.status(200).json({ success: true, message: 'Product deleted successfully!' });
+        } else {
+          res.status(404).json({ success: false, message: 'Product not found' });
+        }
+      } catch (error) {
+        // console.error('Error deleting product:', error);
+        res.status(500).json({ success: false, message: 'Error deleting product' });
+      }
+    });
+
+
 
 
 
