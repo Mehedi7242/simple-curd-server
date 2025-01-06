@@ -27,7 +27,7 @@ async function run() {
     const database = client.db('usersDB')
     const userCollection = database.collection('users')
     const vegetableProductsCollection = database.collection('products'); 
-
+    const cartItemsCollection = database.collection('cartItems'); 
     app.get('/users', async(req, res)=>{
       const cursor = userCollection.find()
       const result = await cursor.toArray();
@@ -86,9 +86,32 @@ async function run() {
         res.status(500).json({ success: false, message: 'Error deleting product' });
       }
     });
+    
+    // Add to cart endpoint
+    app.post('/cart', async (req, res) => {
+      const cartItem = req.body;
+      if (!cartItem.user || !cartItem.id || !cartItem.quantity) {
+        return res.status(400).json({ success: false, message: 'Cart item data is incomplete' });
+      }
 
+      try {
+        const result = await cartItemsCollection.insertOne(cartItem);
+        res.status(200).json({ success: true, message: 'Item added to cart successfully!' });
+      } catch (error) {
+        res.status(500).json({ success: false, message: 'Error adding item to cart' });
+      }
+    });
 
-
+    // Get all cart items endpoint
+    app.get('/cart', async (req, res) => {
+      try {
+        const cursor = cartItemsCollection.find();
+        const result = await cursor.toArray();
+        res.status(200).json(result);
+      } catch (error) {
+        res.status(500).json({ success: false, message: 'Error fetching cart items' });
+      }
+    });
 
 
     // Send a ping to confirm a successful connection
