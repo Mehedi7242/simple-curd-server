@@ -28,6 +28,8 @@ async function run() {
     const userCollection = database.collection('users')
     const vegetableProductsCollection = database.collection('products'); 
     const cartItemsCollection = database.collection('cartItems'); 
+    const ordersCollection = database.collection('orders');
+    
     app.get('/users', async(req, res)=>{
       const cursor = userCollection.find()
       const result = await cursor.toArray();
@@ -110,6 +112,30 @@ async function run() {
         res.status(200).json(result);
       } catch (error) {
         res.status(500).json({ success: false, message: 'Error fetching cart items' });
+      }
+    });
+    app.post('/orders', async (req, res) => {
+      const orderData = req.body;
+      if (!orderData.customer || !orderData.cartItems || !orderData.totalAmount) {
+        return res.status(400).json({ success: false, message: 'Order data is incomplete' });
+      }
+
+      try {
+        const result = await ordersCollection.insertOne(orderData);
+        res.status(200).json({ success: true, message: 'Order placed successfully!' });
+      } catch (error) {
+        res.status(500).json({ success: false, message: 'Error placing order' });
+      }
+    });
+
+    // Get all orders endpoint
+    app.get('/orders', async (req, res) => {
+      try {
+        const cursor = ordersCollection.find();
+        const result = await cursor.toArray();
+        res.status(200).json(result);
+      } catch (error) {
+        res.status(500).json({ success: false, message: 'Error fetching orders' });
       }
     });
 
