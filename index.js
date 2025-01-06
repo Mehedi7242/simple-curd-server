@@ -63,7 +63,7 @@ async function run() {
       try {
         // Insert the product into the vegetableProductsCollection
         const result = await vegetableProductsCollection.insertOne(product);
-        console.log('Inserted Product:', result);
+        // console.log('Inserted Product:', result);
         res.status(200).json({ success: true, message: 'Product added successfully!' });
       } catch (error) {
         // console.error('Error inserting product:', error);
